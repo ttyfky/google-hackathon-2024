@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "b-moz"
+version = "0.1.0"
+description = "Belong catalog collector via AI"
+authors = ["ttyfky <tatsuya@belong.co.jp>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+langchain = "^0.2.13"
+langchain-google-vertexai = "^1.0.8"
+flask = "^3.0.3"
+flask-restful = "^0.3.10"
+
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.0.0"
+black = "^23.3.0"
+flake8 = "^6.0.0"
+typing_extensions = "4.7.1"
+pyright = "^1.1.366"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.group.test] # This part can be left out
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.2"
