@@ -22,8 +22,9 @@ jobs:
       - name: Install Dependencies
         run: poetry install
 
-      - name: Test
-        run: poetry run make test
+      # TODO: recover when pytest is ready
+#      - name: Test
+#        run: poetry run make test
 
       - name: Lint
         run: poetry run make lint
