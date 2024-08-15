@@ -1,0 +1,36 @@
+name: Static Analysis and Test
+
+on:
+  push:
+
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "poetry"
+
+      - name: Install Dependencies
+        run: poetry install
+
+      # TODO: recover when pytest is ready
+#      - name: Test
+#        run: poetry run make test
+
+      - name: Lint
+        run: poetry run make lint
+
+      - name: Format
+        run: poetry run make format-check
+
+      - name: Type check
+        run: poetry run make type-check
