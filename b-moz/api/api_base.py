@@ -8,6 +8,7 @@ from werkzeug.exceptions import HTTPException
 
 GLOBAL_PREFIX = "/api/v1"
 
+
 class ApiBase(Api):
 
     def handle_error(self, e):
@@ -65,7 +66,7 @@ class ApiBase(Api):
 
             if "message" in custom_data:
                 custom_data["message"] = custom_data["message"].format(
-                    message=str(e.description if hasattr(e, "description") else e)
+                    message=str(e.description if hasattr(e, "description") else e)  # type: ignore
                 )
             data.update(custom_data)
 
@@ -74,11 +75,11 @@ class ApiBase(Api):
             exc_info = sys.exc_info()
             if exc_info[1] is None:
                 exc_info = None
-            current_app.log_exception(exc_info)
+            current_app.log_exception(exc_info)  # type: ignore
 
         if status_code == 400:
             if isinstance(data.get("message"), dict):
-                param_key, param_value = list(data.get("message").items())[0]
+                param_key, param_value = list(data.get("message").items())[0]  # type: ignore
                 data = {
                     "code": "invalid_param",
                     "message": param_value,

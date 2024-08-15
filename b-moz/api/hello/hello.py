@@ -2,7 +2,6 @@ import logging
 
 from flask_restful import Resource, fields, marshal_with
 from werkzeug.exceptions import InternalServerError
-from . import api
 
 _logger = logging.getLogger(__name__)
 
@@ -19,6 +18,3 @@ class HelloApi(Resource):
             return {"message": "Hello World"}, 200
         except Exception as e:
             raise InternalServerError(f"Error calling OpenAI: {e}")
-
-
-api.add_resource(HelloApi, "/hello")

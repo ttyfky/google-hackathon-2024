@@ -19,3 +19,10 @@ Run following command.
 ```shell
 make setup
 ```
+
+### Development
+
+Run following command before git commit to verify the code. 
+```shell
+make local-check
+```
