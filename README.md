@@ -1,7 +1,7 @@
 # google-hackathon-2024
 Repo for 2024 Google Cloud Japan AI Hackathon 
 
-## b-moz
+## b_moz
 This product is b-moz that collect catalog information and store them. 
 Mozu (shrike) is a bird that hunts prey and store them in a tree.  
 b-moz is Belong mozu that hunts catalog information and store them as usable manner.

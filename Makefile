@@ -4,7 +4,7 @@ PATH := $(abspath $(BIN)):$(PATH)
 UNAME_OS := $(shell uname -s)
 UNAME_ARCH := $(shell uname -m)
 
-APP_NAME := b-moz
+APP_NAME := b_moz
 
 .PHONY: help
 help: ## print help
