@@ -24,4 +24,4 @@ ENV PYTHONPATH=/app
 COPY . .
 
 EXPOSE 8000
-CMD ["python", "./b-moz/main.py"]
+CMD ["python", "./b_moz/main.py"]

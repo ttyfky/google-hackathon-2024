@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Optional
 
 from langchain_core.language_models import LLM, FakeListLLM
 
 
-def get_langchain_model(responses: List[str] = None) -> LLM:
-    if responses is None:
+def get_langchain_model(responses: Optional[List[str]]) -> LLM:
+    if not responses:
         responses = ["This is a test response."]
     return FakeListLLM(responses=responses)

@@ -25,7 +25,7 @@ Response contains the value and key.
 - The value is official name which is extracted from the context.
 - The key is a format suitable for system id. Based on the value, but all lower case and replace space with hyphen.
   - If the value is not english, translate it to english and apply the rule.
-- Manufacturer and seres can return only key, but the other fields must return a pair of key and value.
+- Manufacturer and series can return only key, but the other fields must return a pair of key and value.
 Example:
 Input: iphone-7
 Answer: {{ "query":'iphone-7", 
@@ -74,16 +74,17 @@ class ModelAttributesPrediction:
             self._logger.error(
                 f"Failed to estimate model for [{query}] in gemini with error: {e}"
             )
-            res = {"message", str(e)}
+            res = {"message": str(e)}
 
         return res
 
 
 def build() -> ModelAttributesPrediction:
-    if os.environ.get("USE_MOCK") and os.environ.get("USE_MOCK").lower() == "true":
+    if os.environ.get("USE_MOCK", "false").lower() == "true":
         from ...libs.llms import mock_model
 
-        return ModelAttributesPrediction(llm=mock_model.get_langchain_model())
+        return ModelAttributesPrediction(llm=mock_model.get_langchain_model([]))
+
     return ModelAttributesPrediction()
 
 
