@@ -1,7 +1,7 @@
-from . import hello
+from . import collect
 
 
 def register(flask_app):
     """Register APIs"""
 
-    flask_app.register_blueprint(hello.bp, url_prefix="/api/v1")
+    flask_app.register_blueprint(collect.bp)
