@@ -11,17 +11,35 @@ SERIES_KEY = "series"
 
 
 class Base:
-    _data: pd.DataFrame
+    _df: pd.DataFrame
     columns: Axes
 
     def __init__(self, data: Optional[pd.DataFrame] = None):
         if data is not None:
-            self._data = data
+            self._df = data
         else:
-            self.data = pd.DataFrame(columns=self.columns)
+            self._df = pd.DataFrame(columns=self.columns)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
 
     def append_df(self, data: pd.DataFrame):
-        self._data = pd.concat([self._data, data], ignore_index=True)
+        self._df = pd.concat([self._df, data], ignore_index=True)
+
+    def get_dataframe(self):
+        return self._df
+
+    def append(self, data):
+        self._df = pd.concat(
+            [
+                self._df,
+                pd.DataFrame(data=[data], columns=self.columns),
+            ],
+            ignore_index=True,
+        )
 
 
 class Model(Base):
@@ -30,11 +48,40 @@ class Model(Base):
     def __init__(self, data: Optional[pd.DataFrame] = None):
         super().__init__(data)
 
-    def append(self, model: str, series: str, manufacturer: str):
-        self._data = pd.concat(
-            [
-                self._data,
-                pd.DataFrame(data=[model, series, manufacturer], columns=self.columns),
-            ],
-            ignore_index=True,
-        )
+    def append_map(self, data: dict):
+        model = data.get("model")
+        if not model:
+            raise ValueError("model is required")
+        self.append([model, data.get("manufacturer", ""), data.get("series", "")])
+
+
+class ModelStorage(Base):
+    columns = [MODEL_KEY, STORAGE_KEY]  # type: ignore
+
+    def __init__(self, data: Optional[pd.DataFrame] = None):
+        super().__init__(data)
+
+    def append_map(self, data: dict):
+        model = data.get("model")
+        if not model:
+            raise ValueError("model is required")
+        storages = data.get("storages", [])
+        if storages:
+            for storage in storages:
+                self.append([model, storage])
+
+
+class ModelColor(Base):
+    columns = [MODEL_KEY, COLOR_KEY]  # type: ignore
+
+    def __init__(self, data: Optional[pd.DataFrame] = None):
+        super().__init__(data)
+
+    def append_map(self, data: dict):
+        model = data.get("model")
+        if not model:
+            raise ValueError("model is required")
+        colors = data.get("colors", [])
+        if colors:
+            for color in colors:
+                self.append([model, color])

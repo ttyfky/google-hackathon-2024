@@ -1,10 +1,11 @@
 import logging
 import os
 
-import pandas as pd
-
-from b_moz.domain.spec.smartphone import Model
-from b_moz.repository.spreadsheet.smartphone import ModelRepo
+from b_moz.repository.spreadsheet.smartphone import (
+    ModelRepo,
+    ModelStorageRepo,
+    ModelColorRepo,
+)
 from b_moz.usecase.grounding.base import MockRag
 from b_moz.usecase.grounding.catalog import SpecCollector
 
@@ -30,14 +31,15 @@ class CollectSpec:
             raise e
 
     def _save(self, extracted: dict):
-        model = extracted["model"]
 
         with ModelRepo() as repo:
-            model_df = pd.DataFrame(
-                data=[[model, extracted["manufacturer"], extracted["series"]]],
-                columns=Model.columns,
-            )
-            repo.save(model_df)
+            repo.save(extracted)
+
+        with ModelStorageRepo() as repo:
+            repo.save(extracted)
+
+        with ModelColorRepo() as repo:
+            repo.save(extracted)
 
 
 def create_target_spec_usecase(spec_repo):
