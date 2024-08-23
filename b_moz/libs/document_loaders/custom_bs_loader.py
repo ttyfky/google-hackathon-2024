@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Dict, Iterator, Union
 
 import requests
@@ -9,6 +10,7 @@ from langchain_community.document_loaders import BSHTMLLoader
 def fetch_url_content(url):
     try:
         response = requests.get(url)
+        response.encoding = response.apparent_encoding
         response.raise_for_status()
         return response.text
     except requests.RequestException as e:
@@ -18,6 +20,17 @@ def fetch_url_content(url):
 
 class CustomBSHTMLLoader(BSHTMLLoader):
     """Custom BSHTMLLoader that can handle both file paths and StringIO objects."""
+
+    def __init__(
+        self,
+        file_path: str | Path,
+        open_encoding: str | None = None,
+        bs_kwargs: Dict | None = None,
+        get_text_separator: str = "",
+        as_html: bool = False,
+    ) -> None:
+        super().__init__(file_path, open_encoding, bs_kwargs, get_text_separator)
+        self.as_html = as_html
 
     def lazy_load(self) -> Iterator[Document]:
         """Load HTML document into document objects."""
@@ -33,7 +46,14 @@ class CustomBSHTMLLoader(BSHTMLLoader):
             with open(self.file_path, "r", encoding=self.open_encoding) as f:
                 soup = BeautifulSoup(f, **self.bs_kwargs)
 
-        text = soup.get_text(self.get_text_separator)
+        for s in soup(["script", "style"]):
+            s.extract()
+
+        if self.as_html:
+            text = str(soup.body)
+            metadata["head"] = str(soup.head)
+        else:
+            text = soup.get_text(self.get_text_separator)
 
         if soup.title:
             title = str(soup.title.string)
