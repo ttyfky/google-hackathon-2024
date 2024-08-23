@@ -8,7 +8,7 @@ from langchain_google_community import GoogleSearchAPIWrapper
 
 from b_moz.libs.document_loaders.custom_bs_loader import CustomBSHTMLLoader
 
-num_results = 10
+num_results = 3
 _logger = logging.getLogger(__name__)
 
 
