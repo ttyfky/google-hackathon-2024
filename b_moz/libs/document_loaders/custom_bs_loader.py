@@ -51,7 +51,6 @@ class CustomBSHTMLLoader(BSHTMLLoader):
 
         if self.as_html:
             text = str(soup.body)
-            metadata["head"] = str(soup.head)
         else:
             text = soup.get_text(self.get_text_separator)
 

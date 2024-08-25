@@ -16,10 +16,10 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
     """Google Search Retriever."""
 
     query_tmpl: str
-    format: str
+    as_html: bool
 
-    def __init__(self, query_tmpl: str, format: str = "text"):
-        super().__init__(query_tmpl=query_tmpl, format=format)  # type: ignore
+    def __init__(self, query_tmpl: str, as_html: bool = False):
+        super().__init__(query_tmpl=query_tmpl, as_html=as_html)  # type: ignore
 
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
@@ -34,5 +34,5 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
     def _fetch_as_document(self, url: str) -> Document:
         _logger.info(f"Fetching {url}")
 
-        as_html = self.format == "html"
+        as_html = self.as_html
         return CustomBSHTMLLoader(file_path=url, as_html=as_html).load()[0]
