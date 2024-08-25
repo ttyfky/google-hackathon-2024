@@ -53,11 +53,11 @@ def create_latest_models_collect_chain() -> Runnable:
         | RunnableLambda(
             lambda x: [
                 {
-                    "input": x["input"],
+                    "input": itemgetter("input"),
                     "context": doc.page_content,
                     "source": doc.metadata["source"],
                 }
-                for doc in x["docs"]
+                for doc in x["docs"]  # type: ignore
             ]
         )
         | RunnableEach(bound=create_model_release_date_extract_chain())
