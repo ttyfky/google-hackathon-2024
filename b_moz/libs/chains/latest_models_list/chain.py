@@ -24,12 +24,11 @@ def filter_latest_models(models: List) -> List:
     filtered = [
         m for m in models if re.match(r"^\d{4}-\d{2}-\d{2}$", m["release_date"])
     ]
-    today = dt.datetime.today()
-    days_30 = dt.timedelta(days=30)
+    days_30_before = dt.datetime.today() - dt.timedelta(days=30)
     return [
         m
         for m in filtered
-        if today - days_30 < dt.datetime.strptime(m["release_date"], "%Y-%m-%d")
+        if days_30_before < dt.datetime.strptime(m["release_date"], "%Y-%m-%d")
     ]
 
 
@@ -48,14 +47,13 @@ def create_latest_models_collect_chain() -> Runnable:
         query_tmpl="{query} 最新モデル 発売", as_html=True
     )
 
-    return (
+    chain = (
         {"input": RunnablePassthrough(), "docs": new_released_model_search}
         | RunnableLambda(
             lambda x: [
                 {
                     "input": itemgetter("input"),
                     "context": doc.page_content,
-                    "source": doc.metadata["source"],
                 }
                 for doc in x["docs"]  # type: ignore
             ]
@@ -63,3 +61,5 @@ def create_latest_models_collect_chain() -> Runnable:
         | RunnableEach(bound=create_model_release_date_extract_chain())
         | (lambda r: reduce(lambda i, e: i + e, r, []))
     )
+
+    return {"query": RunnablePassthrough(), "models": chain} | RunnablePassthrough()
