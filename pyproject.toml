@@ -24,7 +24,7 @@ jupyter = "^1.0.0"
 black = "^24.3.0"
 flake8 = "^7.1.1"
 typing_extensions = "4.12.2"
-pyright = "^1.1.366"
+pyright = "^1.1.377"
 
 
 [build-system]
