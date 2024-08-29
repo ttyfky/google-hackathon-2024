@@ -73,17 +73,12 @@ docker/build:
 GAR_PATH := asia-northeast1-docker.pkg.dev/$(PROJECT_NAME)/google-hackathon/$(APP_NAME):latest
 
 .PHONY: gar/push
+
 gar/push: docker/build
 	docker tag $(APP_NAME)  $(GAR_PATH)
 	docker push $(GAR_PATH)
 
 .PHONY: deploy
-deploy:
+deploy: gar/push
 	gcloud --project=$(PROJECT_NAME) run deploy $(APP_NAME) --image $(GAR_PATH) --region asia-northeast1 --platform managed \
 	  --service-account $(APP_NAME)-crun@$(PROJECT_NAME).iam.gserviceaccount.com
-
-
-.PHONY: echo
-echo:
-	echo ${GAR_PATH}
-	@#set -a && source ./resources/secrets/env.sh && set +a && echo $${GCP_PROJECT_NAME}
