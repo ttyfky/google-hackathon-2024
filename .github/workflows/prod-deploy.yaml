@@ -1,0 +1,23 @@
+name: Production Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - precheck
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-run-service:
+    environment: prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Deploy on Run Services"
+        uses: ./.github/actions/prod-deploy
+        with:
+          project_id: ${{ vars.PROJECT_ID }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.SERVICE_ACCOUNT }}

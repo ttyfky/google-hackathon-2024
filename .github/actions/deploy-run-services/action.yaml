@@ -1,0 +1,30 @@
+name: "Deploy on Cloud Run Services"
+description: "Deploy Cloud Run Services"
+
+inputs:
+  project_id:
+    description: "GCP project ID"
+    required: true
+  workload_identity_provider:
+    description: "Workload Identity Provider ID"
+    required: true
+  service_account:
+    description: "Service account ID"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Auth
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
+
+    - name: Deploy
+      shell: bash
+      run: PROJECT_NAME=${{ inputs.project_id }} make deploy
