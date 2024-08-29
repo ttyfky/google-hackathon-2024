@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Deploy on Run Services"
-        uses: ./.github/actions/prod-deploy
+        uses: ./.github/actions/deploy-run-services
         with:
           project_id: ${{ vars.PROJECT_ID }}
           workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
