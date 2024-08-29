@@ -5,12 +5,22 @@ inputs:
   project_id:
     description: "GCP project ID"
     required: true
+  app_name:
+    description: "App name"
+    required: true
   workload_identity_provider:
     description: "Workload Identity Provider ID"
     required: true
   service_account:
     description: "Service account ID"
     required: true
+  docker_tag:
+    description: "Docker tag"
+    required: true
+  tag:
+    description: "Tag name"
+    required: false
+    default: latest
 
 runs:
   using: composite
@@ -25,6 +35,19 @@ runs:
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
         service_account: ${{ inputs.service_account }}
 
-    - name: Deploy
-      shell: bash
-      run: PROJECT_NAME=${{ inputs.project_id }} make deploy
+    - name: Docker build and push
+      uses: belong-inc/belong-github-actions/.github/actions/build-push@v1.6.4
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
+        docker_tag: ${{ inputs.docker_tag }}:${{ inputs.tag }}
+
+    - name: Deploy to Cloud Run
+      id: deploy
+      uses: google-github-actions/deploy-cloudrun@v2
+      with:
+        image: ${{ inputs.docker_tag }}
+        service: ${{ inputs.app_name }}
+        region: asia-northeast1
+        project_id: ${{ inputs.project_id}}
+        tag: ${{ inputs.tag }}
