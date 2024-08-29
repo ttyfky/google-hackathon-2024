@@ -7,7 +7,7 @@ UNAME_ARCH := $(shell uname -m)
 APP_NAME := b-moz
 
 # This activate env vars.
-include ./resources/secrets/.env
+#include ./resources/secrets/.env
 
 
 .PHONY: help
