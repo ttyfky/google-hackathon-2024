@@ -10,7 +10,7 @@ b-moz is Belong mozu that hunts catalog information and store them as usable man
 
 #### Prerequisites
 You need to have the following installed:
-- Python >=3.12
+- Python =^3.11
   - If you have asdf, you can install it by running `asdf install` in the root dir
 - Poetry
 

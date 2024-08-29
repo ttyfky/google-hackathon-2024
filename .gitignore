@@ -1,5 +1,6 @@
 # Project
 resources/secrets/*
+!resources/secrets/.env.example
 resources/temp/*
 
 

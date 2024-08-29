@@ -4,7 +4,11 @@ PATH := $(abspath $(BIN)):$(PATH)
 UNAME_OS := $(shell uname -s)
 UNAME_ARCH := $(shell uname -m)
 
-APP_NAME := b_moz
+APP_NAME := b-moz
+
+# This activate env vars.
+include ./resources/secrets/.env
+
 
 .PHONY: help
 help: ## print help
@@ -66,7 +70,7 @@ local-check: format lint type-check ## Check health of the project by running fo
 docker/build:
 	docker build . -t $(APP_NAME) --platform linux/amd64
 
-GAR_PATH := asia-northeast1-docker.pkg.dev/$${PROJECT_NAME}/google-hackathon/$(APP_NAME):latest
+GAR_PATH := asia-northeast1-docker.pkg.dev/$(PROJECT_NAME)/google-hackathon/$(APP_NAME):latest
 
 .PHONY: gar/push
 gar/push: docker/build
@@ -74,8 +78,12 @@ gar/push: docker/build
 	docker push $(GAR_PATH)
 
 .PHONY: deploy
-deploy: gar/push
-	gcloud --project=$${PROJECT_NAME} run deploy $(APP_NAME) --image $(GAR_PATH) --region asia-northeast1 --platform managed \
-	  --service-account $(APP_NAME)-crun@$${PROJECT_NAME}.iam.gserviceaccount.com
+deploy:
+	gcloud --project=$(PROJECT_NAME) run deploy $(APP_NAME) --image $(GAR_PATH) --region asia-northeast1 --platform managed \
+	  --service-account $(APP_NAME)-crun@$(PROJECT_NAME).iam.gserviceaccount.com
 
 
+.PHONY: echo
+echo:
+	echo ${GAR_PATH}
+	@#set -a && source ./resources/secrets/env.sh && set +a && echo $${GCP_PROJECT_NAME}
