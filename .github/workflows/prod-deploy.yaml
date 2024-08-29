@@ -27,4 +27,4 @@ jobs:
           app_name: ${{ env.APP_NAME }}
           workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.SERVICE_ACCOUNT }}
-          docker_tag: asia-northeast1-docker.pkg.dev/${{ vars.PROJECT_ID }}/google-hackathon/${{ env.app_name }}
+          docker_tag: asia-northeast1-docker.pkg.dev/${{ vars.PROJECT_ID }}/google-hackathon/${{ env.APP_NAME }}

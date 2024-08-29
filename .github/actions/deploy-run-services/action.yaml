@@ -3,7 +3,7 @@ description: "Deploy Cloud Run Services"
 
 inputs:
   project_id:
-    description: "GCP project ID"
+    description: "Google Cloud project ID"
     required: true
   app_name:
     description: "App name"
@@ -36,7 +36,8 @@ runs:
         service_account: ${{ inputs.service_account }}
 
     - name: Docker build and push
-      uses: belong-inc/belong-github-actions/.github/actions/build-push@v1.6.4
+      # TODO: replace with belong-inc/belong-github-actions/.github/actions/build-push@v1.6.4
+      uses: ./.github/actions/build-push
       with:
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
         service_account: ${{ inputs.service_account }}
