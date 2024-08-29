@@ -2136,13 +2136,13 @@ typing-extensions = ">=4.7"
 
 [[package]]
 name = "langchain-google-community"
-version = "1.0.7"
+version = "1.0.8"
 description = "An integration package connecting miscellaneous Google's products and LangChain"
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "langchain_google_community-1.0.7-py3-none-any.whl", hash = "sha256:0ec6701d3d1934be96cf170a1058480645c6cbe8b242fedb731d8ca4bb6d72d8"},
-    {file = "langchain_google_community-1.0.7.tar.gz", hash = "sha256:baa81e2d92b5cdcff7e484ec9c505db4d19569a5625e32697dbf5003941e9e1b"},
+    {file = "langchain_google_community-1.0.8-py3-none-any.whl", hash = "sha256:200e8db859940708f6d92325215b209149e95b40d7ea2545bce306046d34e4c8"},
+    {file = "langchain_google_community-1.0.8.tar.gz", hash = "sha256:7a57d95bdae4ee7dff8ffef0b41c79a812af0b6a17501aeb535b3be712ab1d6e"},
 ]
 
 [package.dependencies]
@@ -4526,4 +4526,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "e4f6c84a9ef97022cebc19b115fab74e17bd243b8ad87776683ba3a74bcfa507"
+content-hash = "6b7886ad6f97a8c007b0a604f286cea1e58ffffb8b4186c72255ea8c35b1b801"
