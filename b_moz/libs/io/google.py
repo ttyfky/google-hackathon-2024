@@ -99,9 +99,11 @@ class GoogleSpreadSheet:
             creds = GoogleDriveAuth.get_credentials(
                 os.environ.get("CLIENT_ID"), os.environ.get("CLIENT_SECRET")  # type: ignore
             )
-            ssc = gspread.authorize(creds)  # type: ignore
         else:  # in the cloud
-            ssc = gspread.service_account()  # type: ignore
+            import google.auth
+
+            creds, _ = google.auth.default()
+        ssc = gspread.authorize(creds)  # type: ignore
         return ssc
 
 
