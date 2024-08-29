@@ -33,8 +33,8 @@ class GoogleAuth:
     @classmethod
     def _refresh_if_expired(cls, creds) -> Optional[Credentials]:
         if (
-                creds
-                and creds.expiry + datetime.timedelta(days=1) < datetime.datetime.now()
+            creds
+            and creds.expiry + datetime.timedelta(days=1) < datetime.datetime.now()
         ):
             # NOTE: creds.refresh(Request()) does not work for IAP credentials.
             # So, we just return None to force re-authentication.
@@ -101,6 +101,7 @@ class GoogleSpreadSheet:
             )
         else:  # in the cloud
             import google.auth
+
             creds, _ = google.auth.default()
         ssc = gspread.authorize(creds)  # type: ignore
         return ssc
