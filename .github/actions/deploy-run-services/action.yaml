@@ -36,7 +36,6 @@ runs:
         service_account: ${{ inputs.service_account }}
 
     - name: Docker build and push
-      # TODO: replace with belong-inc/belong-github-actions/.github/actions/build-push@v1.6.4
       uses: ./.github/actions/build-push
       with:
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
