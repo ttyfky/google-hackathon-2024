@@ -3,7 +3,12 @@ from abc import abstractmethod
 
 import pandas as pd
 
-from b_moz.domain.spec.smartphone import Model, ModelStorage, ModelColor
+from b_moz.domain.spec.smartphone import (
+    Model,
+    ModelStorage,
+    ModelColor,
+    ModelSupplement,
+)
 from b_moz.libs.io.exporter import GoogleSpreadSheetExporter
 from b_moz.repository.base import RepositoryBase
 
@@ -48,5 +53,14 @@ class ModelColorRepo(SSRepoBase):
 
     def save(self, data: dict, **kwargs):
         with ModelColor() as obj:
+            obj.append_map(data)
+            self.save_df(obj.get_dataframe(), **kwargs)
+
+
+class ModelSupplementRepo(SSRepoBase):
+    sheet_name = "supplements"
+
+    def save(self, data: dict, **kwargs):
+        with ModelSupplement() as obj:
             obj.append_map(data)
             self.save_df(obj.get_dataframe(), **kwargs)

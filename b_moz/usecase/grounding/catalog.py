@@ -11,7 +11,9 @@ class SpecCollector(RagBase):
     def __init__(self):
         super().__init__(chain=create_spec_extract_chain())
 
-    def invoke(self, input: str) -> str:
+    def invoke(self, input: str, category: str = "") -> str:
+        if category:
+            return create_spec_extract_chain(category=category).invoke(input=input)
         return self._chain.invoke(input=input)
 
 
