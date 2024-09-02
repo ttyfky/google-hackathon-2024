@@ -43,5 +43,5 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
         as_html = self.as_html
         try:
             return CustomBSHTMLLoader(file_path=url, as_html=as_html).load()[0]
-        except ValueError as e:
+        except ValueError as _:
             return None
