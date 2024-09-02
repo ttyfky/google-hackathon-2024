@@ -113,7 +113,7 @@ Answer: [
             "storages":["64GB"],
             "material": "アルミニウム",
             "colors":["ピンク", "ミッドナイト", "スターライト", "シルバー", "(PRODUCT)RED"],
-            "size": "41mm",
+            "size": "41mm"
         }},
         {{ "query": "Apple Watch Series 9",
             "model": "Apple Watch Series 9",
@@ -122,7 +122,7 @@ Answer: [
             "storages":["64GB"],
             "material": "アルミニウム",
             "colors":["シルバー", "ゴールド"、"グラファイト"],
-            "size": "45mm",
+            "size": "45mm"
         }}
         ]
 Example 2:
@@ -135,7 +135,7 @@ Answer: [
             "storages":["32GB"],
             "material": "リサイクルアルミニウム",
             "colors": ["Matte Black", "Polished Silver", "Champagne Gold"],
-            "size": "41mm",
+            "size": "41mm"
         }}
         ]
 Context: \n {context}\n
