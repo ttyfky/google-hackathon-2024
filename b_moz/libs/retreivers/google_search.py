@@ -28,20 +28,17 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
         results = search.results(
             query=self.query_tmpl.format(query=query), num_results=num_results
         )
-        # FIXME: check better way to handle this.
-        documents = []
-        for result in results:
-            document = self._fetch_as_document(result["link"])
-            if document is None:
+        docs = []
+        for r in results:
+            try:
+                docs.append(self._fetch_as_document(r["link"]))
+            except Exception as e:
+                _logger.error(f"Failed to fetch {r['link']} with error: {e}")
                 continue
-            documents.append(document)
-        return documents
+        return docs
 
-    def _fetch_as_document(self, url: str) -> Optional[Document]:
+    def _fetch_as_document(self, url: str) -> Document:
         _logger.info(f"Fetching {url}")
 
         as_html = self.as_html
-        try:
-            return CustomBSHTMLLoader(file_path=url, as_html=as_html).load()[0]
-        except ValueError as _:
-            return None
+        return CustomBSHTMLLoader(file_path=url, as_html=as_html).load()[0]
