@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 
 from langchain_core.callbacks.manager import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
@@ -29,10 +29,19 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
             query=self.query_tmpl.format(query=query), num_results=num_results
         )
         # FIXME: check better way to handle this.
-        return [self._fetch_as_document(r["link"]) for r in results]
+        documents = []
+        for result in results:
+            document = self._fetch_as_document(result["link"])
+            if document is None:
+                continue
+            documents.append(document)
+        return documents
 
-    def _fetch_as_document(self, url: str) -> Document:
+    def _fetch_as_document(self, url: str) -> Optional[Document]:
         _logger.info(f"Fetching {url}")
 
         as_html = self.as_html
-        return CustomBSHTMLLoader(file_path=url, as_html=as_html).load()[0]
+        try:
+            return CustomBSHTMLLoader(file_path=url, as_html=as_html).load()[0]
+        except ValueError as e:
+            return None

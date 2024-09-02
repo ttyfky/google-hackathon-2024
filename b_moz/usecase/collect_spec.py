@@ -23,7 +23,8 @@ class CollectSpec:
             extracted = self.rag.invoke(input=target_query, category=category)
             _logger.info(f"Extracted spec: {extracted}")
 
-            self._save(extracted, category)
+            for record in extracted:
+                self._save(record, category)
             return extracted
         except Exception as e:
             _logger.error(
