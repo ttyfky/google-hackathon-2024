@@ -20,7 +20,7 @@ lxml = "^5.3.0"
 gspread = "^6.1.2"
 gspread-dataframe = "^4.0.0"
 [tool.poetry.group.dev.dependencies]
-jupyter = "^1.0.0"
+jupyter = "^1.1.1"
 black = "^24.3.0"
 flake8 = "^7.1.1"
 typing_extensions = "4.12.2"
