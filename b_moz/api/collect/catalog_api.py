@@ -46,14 +46,17 @@ class TargetSpecApi(Resource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("target", type=str, location="json")
+        parser.add_argument("category", type=str, location="json")
+
         args = parser.parse_args()
         target = args.get("target")
+        category = args.get("category", "")
         if not target:
             return {"message": "No target specified"}, 400
 
         _logger.info(f"Query: {target}")
         try:
-            extracted = self._usecase.collect(target_query=target)
+            extracted = self._usecase.collect(target_query=target, category=category)
             return {"message": f"ok [{extracted}]"}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")

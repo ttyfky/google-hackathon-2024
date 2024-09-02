@@ -8,6 +8,7 @@ COLOR_KEY = "color"
 STORAGE_KEY = "storage"
 MANUFACTURER_KEY = "manufacturer"
 SERIES_KEY = "series"
+DUMP_KEY = "dump"
 
 
 class Base:
@@ -85,3 +86,16 @@ class ModelColor(Base):
         if colors:
             for color in colors:
                 self.append([model, color])
+
+
+class ModelSupplement(Base):
+    columns = [MODEL_KEY, DUMP_KEY]  # type: ignore
+
+    def __init__(self, data: Optional[pd.DataFrame] = None):
+        super().__init__(data)
+
+    def append_map(self, data: dict):
+        model = data.get("model")
+        if not model:
+            raise ValueError("model is required")
+        self.append([model, str(data)])
