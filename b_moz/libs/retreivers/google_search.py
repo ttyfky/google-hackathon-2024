@@ -33,7 +33,7 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
             try:
                 docs.append(self._fetch_as_document(r["link"]))
             except Exception as e:
-                _logger.error(f"Failed to fetch {r['link']} with error: {e}")
+                _logger.warning(f"Failed to fetch {r['link']} with error: {e}")
                 continue
         return docs
 
