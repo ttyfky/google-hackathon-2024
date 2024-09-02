@@ -81,5 +81,72 @@ Answer:
 
 PC_SPEC_EXTRACT_PROMPT = ChatPromptTemplate.from_template(template_extract_pc_spec)
 
+smartwatch_prefix = """You are specialist of smartwatch who knows
+manufacturer, series, storages, sizes, colors and other details.
+"""
+
+template_extract_smartwatch_spec = (
+    smartwatch_prefix
+    + extract_instruction
+    + """
+Fields to extract:
+- Model name
+- Storages
+- Size or Height
+- Material
+- Colors
+  - This can be `仕上げ` if model is for Apple
+  - The opstions may vary depending on the size or the material 
+  - This should be the case color, not the band color
+- Manufacturer
+- Series
+Response format:
+- The value is official name which is extracted from the context.
+- The records are splited by the size or the material.
+Example 1:
+Input: Apple Watch Series 9
+Answer: [
+        {{ "query": "Apple Watch Series 9",
+            "model": "Apple Watch Series 9",
+            "manufacturer": "Apple",
+            "series": "Apple Watch",
+            "storages":["64GB"],
+            "material": "アルミニウム",
+            "colors":["ピンク", "ミッドナイト", "スターライト", "シルバー", "(PRODUCT)RED"],
+            "size": "41mm"
+        }},
+        {{ "query": "Apple Watch Series 9",
+            "model": "Apple Watch Series 9",
+            "manufacturer": "Apple",
+            "series": "Apple Watch",
+            "storages":["64GB"],
+            "material": "アルミニウム",
+            "colors":["シルバー", "ゴールド"、"グラファイト"],
+            "size": "45mm"
+        }}
+        ]
+Example 2:
+Input: Google Pixel Watch 2
+Answer: [
+        {{ "query": "Google Pixel Watch 2",
+            "model": "Google Pixel Watch 2",
+            "manufacturer": "Google",
+            "series": "Pixel Watch",
+            "storages":["32GB"],
+            "material": "リサイクルアルミニウム",
+            "colors": ["Matte Black", "Polished Silver", "Champagne Gold"],
+            "size": "41mm"
+        }}
+        ]
+Context: \n {context}\n
+Input Model: \n {input} \n
+Answer:
+"""
+)
+
+SMARTWATCH_SPEC_EXTRACT_PROMPT = ChatPromptTemplate.from_template(
+    template_extract_smartwatch_spec
+)
+
 if __name__ == "__main__":
     print(ChatPromptTemplate.from_template(template_extract_pc_spec))

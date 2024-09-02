@@ -28,8 +28,14 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
         results = search.results(
             query=self.query_tmpl.format(query=query), num_results=num_results
         )
-        # FIXME: check better way to handle this.
-        return [self._fetch_as_document(r["link"]) for r in results]
+        docs = []
+        for r in results:
+            try:
+                docs.append(self._fetch_as_document(r["link"]))
+            except Exception as e:
+                _logger.warning(f"Failed to fetch {r['link']} with error: {e}")
+                continue
+        return docs
 
     def _fetch_as_document(self, url: str) -> Document:
         _logger.info(f"Fetching {url}")
