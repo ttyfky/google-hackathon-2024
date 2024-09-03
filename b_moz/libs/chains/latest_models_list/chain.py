@@ -13,7 +13,7 @@ from langchain_core.runnables import (
     RunnablePassthrough,
     RunnableLambda,
 )
-from langchain_core.runnables.base import RunnableEach
+from langchain_core.runnables.base import RunnableEach, RunnableParallel
 
 from .prompt import LATEST_MODELS_LIST_PROMPT as prompt
 from ...llms.vertexai import get_langchain_model
@@ -48,7 +48,9 @@ def create_latest_models_collect_chain() -> Runnable:
     )
 
     chain = (
-        {"input": RunnablePassthrough(), "docs": new_released_model_search}
+        RunnableParallel(
+            {"input": RunnablePassthrough(), "docs": new_released_model_search}
+        )
         | RunnableLambda(
             lambda x: [
                 {
@@ -62,4 +64,4 @@ def create_latest_models_collect_chain() -> Runnable:
         | (lambda r: reduce(lambda i, e: i + e, r, []))
     )
 
-    return {"query": RunnablePassthrough(), "models": chain} | RunnablePassthrough()
+    return RunnableParallel({"query": RunnablePassthrough(), "models": chain})

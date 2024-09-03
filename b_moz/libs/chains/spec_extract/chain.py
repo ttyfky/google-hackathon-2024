@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 from langchain_core.output_parsers import SimpleJsonOutputParser
-from langchain_core.runnables import Runnable, RunnablePassthrough
+from langchain_core.runnables import (
+    Runnable,
+    RunnablePassthrough,
+    RunnableParallel,
+    RunnableLambda,
+)
 
 from .prompt import (
     SMARTPHONE_SPEC_EXTRACT_PROMPT,
@@ -23,12 +28,14 @@ def create_spec_extract_chain(category: str = "smartphone") -> Runnable:
         prompt = SMARTPHONE_SPEC_EXTRACT_PROMPT
 
     return (
-        {
-            "context": GoogleSearchJsonResultRetriever(query_tmpl="{query} 仕様"),
-            "input": RunnablePassthrough(),
-        }
+        RunnableParallel(
+            {
+                "context": GoogleSearchJsonResultRetriever(query_tmpl="{query} 仕様"),
+                "input": RunnablePassthrough(),
+            }
+        )
         | prompt
         | get_langchain_model()
         | SimpleJsonOutputParser()
-        | (lambda r: [r] if type(r) is dict else r)
+        | RunnableLambda((lambda r: [r] if type(r) is dict else r))
     )
