@@ -18,6 +18,14 @@ from ...llms.vertexai import get_langchain_model
 from ...retreivers.google_search import GoogleSearchJsonResultRetriever
 
 
+def _coalesce_result(result):
+    result_json = result["result"]
+    query = result["input"]
+    if type(result_json) is dict and "error" in result_json:
+        return {"query": query, "error": result_json["error"], "status": "failed"}
+    return result_json | {"status": "success"}
+
+
 def create_spec_extract_chain(category: str = "smartphone") -> Runnable:
     if category == "smartphone":
         prompt = SMARTPHONE_SPEC_EXTRACT_PROMPT
@@ -30,13 +38,6 @@ def create_spec_extract_chain(category: str = "smartphone") -> Runnable:
 
     chain = prompt | get_langchain_model() | JsonOutputParserWithErrorCatch()
 
-    def coalesce_result(result):
-        result_json = result["result"]
-        query = result["input"]
-        if type(result_json) is dict and "error" in result_json:
-            return {"query": query, "error": result_json["error"], "result": "failed"}
-        return result_json | {"result": "success"}
-
     return (
         {
             "context": GoogleSearchJsonResultRetriever(query_tmpl="{query} 仕様"),
@@ -46,6 +47,6 @@ def create_spec_extract_chain(category: str = "smartphone") -> Runnable:
             result=chain,
             input=itemgetter("input"),
         )
-        | RunnableLambda(coalesce_result)
+        | RunnableLambda(_coalesce_result)
         | RunnableLambda(lambda r: [r] if type(r) is dict else r)
     )
