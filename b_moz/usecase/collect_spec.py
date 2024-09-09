@@ -25,10 +25,6 @@ class CollectSpec:
             extracted = self.rag.invoke(input=target_query, category=category)
             _logger.info(f"Extracted spec: {extracted}")
 
-            if type(extracted[0]) is dict and extracted[0]["status"] == "failed":
-                self._save_exception(target_query, extracted[0]["error"])
-                return extracted
-
             for record in extracted:
                 self._save(record, category)
             return extracted

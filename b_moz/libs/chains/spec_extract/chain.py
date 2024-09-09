@@ -1,14 +1,12 @@
 from __future__ import annotations
-from operator import itemgetter
 
+from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.runnables import (
     Runnable,
     RunnablePassthrough,
-    RunnableParallel,
     RunnableLambda,
 )
 
-from b_moz.libs.io.parser import JsonOutputParserWithErrorCatch
 from .prompt import (
     SMARTPHONE_SPEC_EXTRACT_PROMPT,
     PC_SPEC_EXTRACT_PROMPT,
@@ -16,14 +14,6 @@ from .prompt import (
 )
 from ...llms.vertexai import get_langchain_model
 from ...retreivers.google_search import GoogleSearchJsonResultRetriever
-
-
-def _coalesce_result(result):
-    result_json = result["result"]
-    query = result["input"]
-    if type(result_json) is dict and "error" in result_json:
-        return {"query": query, "error": result_json["error"], "status": "failed"}
-    return result_json | {"status": "success"}
 
 
 def create_spec_extract_chain(category: str = "smartphone") -> Runnable:
@@ -36,17 +26,13 @@ def create_spec_extract_chain(category: str = "smartphone") -> Runnable:
     else:
         prompt = SMARTPHONE_SPEC_EXTRACT_PROMPT
 
-    chain = prompt | get_langchain_model() | JsonOutputParserWithErrorCatch()
-
     return (
         {
             "context": GoogleSearchJsonResultRetriever(query_tmpl="{query} 仕様"),
             "input": RunnablePassthrough(),
         }
-        | RunnableParallel(
-            result=chain,
-            input=itemgetter("input"),
-        )
-        | RunnableLambda(_coalesce_result)
+        | prompt
+        | get_langchain_model()
+        | JsonOutputParser()
         | RunnableLambda(lambda r: [r] if type(r) is dict else r)
     )
