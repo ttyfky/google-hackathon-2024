@@ -6,6 +6,7 @@ from b_moz.repository.spreadsheet.smartphone import (
     ModelStorageRepo,
     ModelColorRepo,
     ModelSupplementRepo,
+    ExtractExceptionRepo,
 )
 from b_moz.usecase.grounding.base import MockRag
 from b_moz.usecase.grounding.catalog import SpecCollector
@@ -30,6 +31,8 @@ class CollectSpec:
             _logger.error(
                 f"Failed to extract spec for [{target_query}] with error: {e}"
             )
+            with ExtractExceptionRepo() as repo:
+                repo.save({"query": target_query, "message": str(e)})
             raise e
 
     def _save(self, extracted: dict, category: str = ""):

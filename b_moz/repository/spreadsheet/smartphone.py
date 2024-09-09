@@ -8,6 +8,7 @@ from b_moz.domain.spec.smartphone import (
     ModelStorage,
     ModelColor,
     ModelSupplement,
+    ExtractException,
 )
 from b_moz.libs.io.exporter import GoogleSpreadSheetExporter
 from b_moz.repository.base import RepositoryBase
@@ -62,5 +63,15 @@ class ModelSupplementRepo(SSRepoBase):
 
     def save(self, data: dict, **kwargs):
         with ModelSupplement() as obj:
+            obj.append_map(data)
+            self.save_df(obj.get_dataframe(), **kwargs)
+
+
+# TODO change dir
+class ExtractExceptionRepo(SSRepoBase):
+    sheet_name = "exception"
+
+    def save(self, data: dict, **kwargs):
+        with ExtractException() as obj:
             obj.append_map(data)
             self.save_df(obj.get_dataframe(), **kwargs)
