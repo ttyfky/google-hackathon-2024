@@ -36,7 +36,7 @@ def create_model_release_date_extract_chain() -> Runnable:
     return (
         {"input": itemgetter("input"), "context": itemgetter("context")}
         | prompt
-        | get_langchain_model()
+        | get_langchain_model().bind(response_mime_type="application/json")
         | SimpleJsonOutputParser()
         | RunnableLambda(filter_latest_models)
     )

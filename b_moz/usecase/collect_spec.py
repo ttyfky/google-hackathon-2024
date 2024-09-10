@@ -7,8 +7,8 @@ from b_moz.repository.spreadsheet.smartphone import (
     ModelStorageRepo,
     ModelColorRepo,
     ModelSupplementRepo,
-    ExtractExceptionRepo,
 )
+from b_moz.repository.spreadsheet.query import ExtractExceptionRepo
 from b_moz.usecase.grounding.base import MockRag
 from b_moz.usecase.grounding.catalog import SpecCollector
 

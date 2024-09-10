@@ -8,7 +8,8 @@ from langchain_google_community import GoogleSearchAPIWrapper
 
 from b_moz.libs.document_loaders.custom_bs_loader import CustomBSHTMLLoader
 
-MAX_RESULTS = 10
+num_results = 3
+max_results = 5
 _logger = logging.getLogger(__name__)
 
 
@@ -17,17 +18,16 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
 
     query_tmpl: str
     as_html: bool
-    num_results: int
 
-    def __init__(self, query_tmpl: str, as_html: bool = False, num_results: int = 3):
-        super().__init__(query_tmpl=query_tmpl, as_html=as_html, num_results=num_results)  # type: ignore
+    def __init__(self, query_tmpl: str, as_html: bool = False):
+        super().__init__(query_tmpl=query_tmpl, as_html=as_html)  # type: ignore
 
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
     ) -> List[Document]:
         search = GoogleSearchAPIWrapper()
         results = search.results(
-            query=self.query_tmpl.format(query=query), num_results=MAX_RESULTS
+            query=self.query_tmpl.format(query=query), num_results=max_results
         )
         docs = []
         for r in results:
@@ -38,7 +38,7 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
                 continue
             try:
                 docs.append(self._fetch_as_document(link))
-                if len(docs) >= self.num_results:
+                if len(docs) >= num_results:
                     break
             except Exception as e:
                 _logger.warning(f"Failed to fetch {link} with error: {e}")

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.output_parsers import SimpleJsonOutputParser
 from langchain_core.runnables import (
     Runnable,
     RunnablePassthrough,
@@ -32,7 +32,7 @@ def create_spec_extract_chain(category: str = "smartphone") -> Runnable:
             "input": RunnablePassthrough(),
         }
         | prompt
-        | get_langchain_model()
-        | JsonOutputParser()
+        | get_langchain_model().bind(response_mime_type="application/json")
+        | SimpleJsonOutputParser()
         | RunnableLambda(lambda r: [r] if type(r) is dict else r)
     )
