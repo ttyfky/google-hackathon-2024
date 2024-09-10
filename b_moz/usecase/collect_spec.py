@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import List
 
 from b_moz.repository.spreadsheet.smartphone import (
     ModelRepo,
@@ -7,6 +8,7 @@ from b_moz.repository.spreadsheet.smartphone import (
     ModelColorRepo,
     ModelSupplementRepo,
 )
+from b_moz.repository.spreadsheet.query import ExtractExceptionRepo
 from b_moz.usecase.grounding.base import MockRag
 from b_moz.usecase.grounding.catalog import SpecCollector
 
@@ -18,7 +20,7 @@ class CollectSpec:
         self.spec_repo = spec_repo
         self.rag = rag
 
-    def collect(self, target_query: str, category: str = "") -> str:
+    def collect(self, target_query: str, category: str = "") -> List:
         try:
             extracted = self.rag.invoke(input=target_query, category=category)
             _logger.info(f"Extracted spec: {extracted}")
@@ -26,10 +28,16 @@ class CollectSpec:
             for record in extracted:
                 self._save(record, category)
             return extracted
+
+        except ValueError as e:
+            _logger.error(f"Failed to save spec for [{target_query}] with error: {e}")
+            raise e
+
         except Exception as e:
             _logger.error(
                 f"Failed to extract spec for [{target_query}] with error: {e}"
             )
+            self._save_exception(target_query, str(e))
             raise e
 
     def _save(self, extracted: dict, category: str = ""):
@@ -46,6 +54,10 @@ class CollectSpec:
         if category != "smartphone":
             with ModelSupplementRepo() as repo:
                 repo.save(extracted)
+
+    def _save_exception(self, query: str, message: str):
+        with ExtractExceptionRepo() as repo:
+            repo.save({"query": query, "message": message})
 
 
 def create_target_spec_usecase(spec_repo):

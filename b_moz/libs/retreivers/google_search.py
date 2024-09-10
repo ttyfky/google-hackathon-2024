@@ -8,7 +8,8 @@ from langchain_google_community import GoogleSearchAPIWrapper
 
 from b_moz.libs.document_loaders.custom_bs_loader import CustomBSHTMLLoader
 
-num_results = 3
+NUM_RESULTS = 3
+MAX_RESULTS = 5
 _logger = logging.getLogger(__name__)
 
 
@@ -26,14 +27,21 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
     ) -> List[Document]:
         search = GoogleSearchAPIWrapper()
         results = search.results(
-            query=self.query_tmpl.format(query=query), num_results=num_results
+            query=self.query_tmpl.format(query=query), num_results=MAX_RESULTS
         )
         docs = []
         for r in results:
+            link = r["link"]
+            if link.endswith(".pdf"):
+                # some pdf causes invalid augument error
+                _logger.info(f"Skip to fetch pdf: {link}")
+                continue
             try:
-                docs.append(self._fetch_as_document(r["link"]))
+                docs.append(self._fetch_as_document(link))
+                if len(docs) >= NUM_RESULTS:
+                    break
             except Exception as e:
-                _logger.warning(f"Failed to fetch {r['link']} with error: {e}")
+                _logger.warning(f"Failed to fetch {link} with error: {e}")
                 continue
         return docs
 
