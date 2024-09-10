@@ -25,11 +25,14 @@ black = "^24.3.0"
 flake8 = "^7.1.1"
 typing_extensions = "4.12.2"
 pyright = "^1.1.377"
+pandas-gbq = "^0.23.1"
+google-cloud-bigquery = {extras = ["bqstorage", "pandas"], version = "^3.25.0"}
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
 
 
 [tool.poetry.group.test] # This part can be left out
