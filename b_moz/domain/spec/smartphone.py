@@ -17,7 +17,7 @@ class Base(DataFrameHolder):
 
 
 class Model(Base):
-    columns = [MODEL_KEY, SERIES_KEY, MANUFACTURER_KEY]  # type: ignore
+    columns = [MODEL_KEY, MANUFACTURER_KEY, SERIES_KEY]  # type: ignore
 
     def __init__(self, data: Optional[pd.DataFrame] = None):
         super().__init__(data)

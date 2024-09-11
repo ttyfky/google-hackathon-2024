@@ -54,9 +54,8 @@ class CollectSpec:
         with ModelColorRepo() as repo:
             repo.save(extracted)
 
-        if category != "smartphone":
-            with ModelSupplementRepo() as repo:
-                repo.save(extracted)
+        with ModelSupplementRepo() as repo:
+            repo.save(extracted)
 
     def _save_exception(self, query: str, message: str):
         with ExtractExceptionRepo() as repo:
