@@ -9,7 +9,7 @@ from langchain_community.document_loaders import BSHTMLLoader
 
 def fetch_url_content(url):
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         response.encoding = response.apparent_encoding
         response.raise_for_status()
         return response.text
