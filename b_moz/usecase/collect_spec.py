@@ -2,13 +2,13 @@ import logging
 import os
 from typing import List
 
+from b_moz.repository.spreadsheet.query import ExtractExceptionRepo, ModelSourceRepo
 from b_moz.repository.spreadsheet.smartphone import (
     ModelRepo,
     ModelStorageRepo,
     ModelColorRepo,
     ModelSupplementRepo,
 )
-from b_moz.repository.spreadsheet.query import ExtractExceptionRepo
 from b_moz.usecase.grounding.base import MockRag
 from b_moz.usecase.grounding.catalog import SpecCollector
 
@@ -22,11 +22,11 @@ class CollectSpec:
 
     def collect(self, target_query: str, category: str = "") -> List:
         try:
-            extracted = self.rag.invoke(input=target_query, category=category)
+            extracted, links = self.rag.invoke(input=target_query, category=category)
             _logger.info(f"Extracted spec: {extracted}")
 
             for record in extracted:
-                self._save(record, category)
+                self._save(record, links, category)
             return extracted
 
         except ValueError as e:
@@ -40,10 +40,13 @@ class CollectSpec:
             self._save_exception(target_query, str(e))
             raise e
 
-    def _save(self, extracted: dict, category: str = ""):
+    def _save(self, extracted: dict, links: list, category: str = ""):
 
         with ModelRepo() as repo:
             repo.save(extracted)
+
+        with ModelSourceRepo() as repo:
+            repo.save(extracted, links=links)
 
         with ModelStorageRepo() as repo:
             repo.save(extracted)

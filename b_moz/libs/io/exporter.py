@@ -62,11 +62,11 @@ class GoogleSpreadSheetExporter(ResultExporter):
         self._file_id = file_id
 
     def export(
-            self,
-            data: pd.DataFrame,
-            sheet_name: str = "data",
-            clear_sheet: bool = False,
-            **kwargs,
+        self,
+        data: pd.DataFrame,
+        sheet_name: str = "data",
+        clear_sheet: bool = False,
+        **kwargs,
     ) -> str:
         """Export data to Google Spread Sheet."""
         if not self._file_id:

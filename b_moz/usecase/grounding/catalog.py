@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Any, Tuple
 
 from b_moz.libs.chains.latest_models_list.chain import (
     create_latest_models_collect_chain,
@@ -11,7 +11,11 @@ class SpecCollector(RagBase):
     def __init__(self):
         super().__init__(chain=create_spec_extract_chain())
 
-    def invoke(self, input: str, category: str = "") -> str:
+    def invoke(self, input: str, category: str = "") -> Tuple[List[Any], List[str]]:
+        res = self._invoke(input, category)
+        return res["result"], [r.metadata["source"] for r in res["links"]]
+
+    def _invoke(self, input, category):
         if category:
             return create_spec_extract_chain(category=category).invoke(input=input)
         return self._chain.invoke(input=input)
