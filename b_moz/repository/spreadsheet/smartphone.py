@@ -12,7 +12,7 @@ class ModelRepo(SSRepoBase):
 
     def save(self, data: dict, **kwargs):
         with Model() as obj:
-            obj.append_map(data)
+            obj.append_map(data, kwargs["query"], kwargs["category"])
             self.save_df(obj.get_dataframe(), **kwargs)
 
 
