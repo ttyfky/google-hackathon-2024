@@ -55,8 +55,6 @@ class ModelStorage(Base):
             storage = storage
 
         storage = re.findall(r"\d+(?:GB|TB)", storage.replace(" ", ""))[0]
-
-        # .replace('約','')
         return storage
 
 
