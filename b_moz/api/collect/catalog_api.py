@@ -1,8 +1,10 @@
+import json
 import logging
 
 from flask_restful import Resource, fields, marshal_with, reqparse
 from werkzeug.exceptions import InternalServerError
 
+from b_moz.repository.pubsub.push import PubSub
 from b_moz.usecase.collect_latest_items import create_latest_items_usecase
 from b_moz.usecase.collect_spec import create_target_spec_usecase
 
@@ -32,6 +34,7 @@ class LatestItemsApi(Resource):
         _logger.info(f"Query: {category}")
         try:
             new_items = self._usecase.collect(category_query=category)
+
             return {"message": f"ok [{new_items}]"}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")
@@ -58,6 +61,7 @@ class TargetSpecApi(Resource):
         _logger.info(f"Query: {target}")
         try:
             extracted = self._usecase.collect(target_query=target, category=category)
+
             return {"message": f"ok [{extracted}]"}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")

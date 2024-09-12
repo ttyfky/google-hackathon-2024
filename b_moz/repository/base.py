@@ -14,5 +14,5 @@ class RepositoryBase:
         pass
 
     @abstractmethod
-    def save(self, data: pd.DataFrame, **kwargs):
+    def save(self, data: dict, **kwargs):
         pass
