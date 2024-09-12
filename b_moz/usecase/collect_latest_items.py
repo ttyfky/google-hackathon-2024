@@ -20,8 +20,8 @@ class CollectLatestModels:
             latests: Dict = self.rag.invoke(input=category_query)
             _logger.info(f"Collected latest models: {latests}")
             with PubSub() as pb:
-                for model in latests['models']:
-                    model['category'] = category_query
+                for model in latests["models"]:
+                    model["category"] = category_query
                     pb.save(model)
             return latests
         except Exception as e:

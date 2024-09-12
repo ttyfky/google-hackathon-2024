@@ -1,7 +1,5 @@
 from abc import abstractmethod
 
-import pandas as pd
-
 
 class RepositoryBase:
     def __init__(self, **kwargs):

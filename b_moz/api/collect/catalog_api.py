@@ -1,10 +1,8 @@
-import json
 import logging
 
 from flask_restful import Resource, fields, marshal_with, reqparse
 from werkzeug.exceptions import InternalServerError
 
-from b_moz.repository.pubsub.push import PubSub
 from b_moz.usecase.collect_latest_items import create_latest_items_usecase
 from b_moz.usecase.collect_spec import create_target_spec_usecase
 
