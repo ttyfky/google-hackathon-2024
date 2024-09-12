@@ -18,7 +18,7 @@ template_extract_smartphone_spec = (
 - Model name
 - Storages
 - Colors
-  - This can be `仕上げ` if model is for Apple
+  - Color indicator can be expressed as `仕上げ` if model is for Apple so extract related information.
 - Manufacturer
 - Series
 Response format:
