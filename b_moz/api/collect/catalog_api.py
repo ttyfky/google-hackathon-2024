@@ -26,6 +26,7 @@ class LatestItemsApi(Resource):
         args = parser.parse_args()
         category = args.get("category")
         if not category:
+            _logger.error("No category specified")
             return {"message": "No category specified"}, 400
 
         _logger.info(f"Query: {category}")
