@@ -11,4 +11,3 @@ class TestModelStorage:
         assert ModelStorage.format("8 RAM + 256 GB memory") == "256GB"
         assert ModelStorage.format("18GB + 1TB") == "1TB"
         assert ModelStorage.format("12+256GB") == "256GB"
-

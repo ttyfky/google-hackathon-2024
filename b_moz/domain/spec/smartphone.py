@@ -48,13 +48,13 @@ class ModelStorage(Base):
     @staticmethod
     def format(storage: str):
         # Some Android has `8 GB + 256 GB`, `8 RAM + 256 GB memory` in storage column.
-        strageli = storage.split('+')
+        strageli = storage.split("+")
         if len(strageli) > 1:
             storage = strageli[1].strip()
         else:
             storage = storage
 
-        storage = re.findall(r"\d+(?:GB|TB)", storage.replace(' ', ''))[0]
+        storage = re.findall(r"\d+(?:GB|TB)", storage.replace(" ", ""))[0]
 
         # .replace('約','')
         return storage
