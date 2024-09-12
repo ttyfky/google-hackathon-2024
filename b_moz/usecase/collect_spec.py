@@ -26,7 +26,7 @@ class CollectSpec:
             _logger.info(f"Extracted spec: {extracted}")
 
             for record in extracted:
-                self._save(record, links, category)
+                self._save(record, links, target_query, category)
             return extracted
 
         except ValueError as e:
@@ -40,10 +40,10 @@ class CollectSpec:
             self._save_exception(target_query, str(e))
             raise e
 
-    def _save(self, extracted: dict, links: list, category: str = ""):
+    def _save(self, extracted: dict, links: list, query: str, category: str = ""):
 
         with ModelRepo() as repo:
-            repo.save(extracted)
+            repo.save(extracted, query=query, category=category)
 
         with ModelSourceRepo() as repo:
             repo.save(extracted, links=links)

@@ -4,6 +4,8 @@ import pandas as pd
 
 from ..base import DataFrameHolder
 
+CATEGORY_KEY = "category"
+QUERY_KEY = "query"
 MODEL_KEY = "model"
 COLOR_KEY = "color"
 STORAGE_KEY = "storage"
@@ -17,16 +19,24 @@ class Base(DataFrameHolder):
 
 
 class Model(Base):
-    columns = [MODEL_KEY, MANUFACTURER_KEY, SERIES_KEY]  # type: ignore
+    columns = [MODEL_KEY, MANUFACTURER_KEY, SERIES_KEY, QUERY_KEY, CATEGORY_KEY]  # type: ignore
 
     def __init__(self, data: Optional[pd.DataFrame] = None):
         super().__init__(data)
 
-    def append_map(self, data: dict):
+    def append_map(self, data: dict, query: str, category: str):
         model = data.get("model")
         if not model:
             raise ValueError("model is required")
-        self.append([model, data.get("manufacturer", ""), data.get("series", "")])
+        self.append(
+            [
+                model,
+                data.get("manufacturer", ""),
+                data.get("series", ""),
+                query,
+                category,
+            ]
+        )
 
 
 class ModelStorage(Base):
