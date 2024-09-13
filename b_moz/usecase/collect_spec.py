@@ -25,9 +25,11 @@ class CollectSpec:
             _logger.info(f"Extracted spec: {extracted}")
 
             if kwargs.get("mode", "") == "SS_SAVE":
+                _logger.info(f"Saving spec for [{target_query}] to SS")
                 for record in extracted:
                     get_saver().save_spec(record, links, target_query, category)
             else:
+                _logger.info(f"Publishing spec for [{target_query}] to PubSub")
                 with PubSub() as pb:
                     for record in extracted:
                         record["category"] = category
