@@ -91,7 +91,7 @@ class CollectSpecPubSub:
         return True
 
     def collect(self, **kwargs) -> List:
-        with PubSub() as ps:
+        with PubSub(num_pull=10) as ps:
             for _ in range(self._NUM_PULL_PROCESS):  # 5 times, 3 messages per pull
                 ps.pull_with(self._call_back)
         return self._result
@@ -102,7 +102,7 @@ def create_pubsub_target_spec_usecase(spec_repo) -> CollectSpecPubSub:
 
 
 class SavePubSubCollectedSpecToSS:
-    _NUM_PULL_PROCESS = 4
+    _NUM_PULL_PROCESS = 20
 
     def __init__(self):
         pass
@@ -131,13 +131,14 @@ class SavePubSubCollectedSpecToSS:
         return True
 
     def save(self, **kwargs):
-        with PubSub(num_pull=25) as ps:
-            for _ in range(self._NUM_PULL_PROCESS):  # 4 times, 25 messages per pull.
+        with PubSub(num_pull=50) as ps:  # 50 messages per pull.
+            for _ in range(self._NUM_PULL_PROCESS):
                 if not ps.pull_with(
-                    self._call_back, subscription_id=self._get_spec_subscription()
+                    callback=self._call_back,
+                    postprocess=lambda: get_saver().flush(),
+                    subscription_id=self._get_spec_subscription(),
                 ):
                     break
-        get_saver().flush()
 
 
 def create_save_pubsub_target_spec_usecase() -> SavePubSubCollectedSpecToSS:

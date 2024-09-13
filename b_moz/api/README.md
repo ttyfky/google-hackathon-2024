@@ -39,9 +39,7 @@ sequenceDiagram
     SPECPS ->> PSC: カタログ情報
     Scheduler ->> SAVE: 保存トリガー
     SAVE -> PSC: カタログ Pull
-    PSC -->> SAVE: katarogu 
+    PSC -->> SAVE: カタログ 
     SAVE ->> SAVE: 処理
     SAVE ->> DataStore: 保存
- 
-
 ```

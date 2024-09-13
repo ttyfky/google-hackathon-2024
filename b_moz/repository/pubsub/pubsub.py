@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from typing import Callable
+from typing import Callable, Optional
 
 from google.api_core import retry
 from google.cloud import pubsub_v1
@@ -36,6 +36,7 @@ class PubSub(RepositoryBase):
     def pull_with(
         self,
         callback: Callable[[bytes], bool],
+        postprocess: Optional[Callable[[], None]] = None,
         subscription_id: str = "moz-target-subscription-pull",
         **kwargs,
     ) -> bool:
@@ -59,6 +60,10 @@ class PubSub(RepositoryBase):
             for received_message in response.received_messages:
                 if callback(received_message.message.data):
                     ack_ids.append(received_message.ack_id)
+
+            if postprocess:
+                postprocess()
+
             if ack_ids:
                 subscriber.acknowledge(
                     request={"subscription": subscription_path, "ack_ids": ack_ids}
