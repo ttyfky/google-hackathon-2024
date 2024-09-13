@@ -1,7 +1,5 @@
 from abc import abstractmethod
 
-import pandas as pd
-
 
 class RepositoryBase:
     def __init__(self, **kwargs):
@@ -14,5 +12,5 @@ class RepositoryBase:
         pass
 
     @abstractmethod
-    def save(self, data: pd.DataFrame, **kwargs):
+    def save(self, data: dict, **kwargs):
         pass

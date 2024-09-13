@@ -60,6 +60,10 @@ class GoogleSpreadSheetExporter(ResultExporter):
     def __init__(self, filename: str = "", file_id: str = ""):
         super().__init__(filename=filename)
         self._file_id = file_id
+        self._client = GoogleSpreadSheet.get_client()
+        if not self._file_id:
+            raise ValueError("File ID is not set.")
+        self._workbook = self._client.open_by_key(self._file_id)
 
     def export(
         self,
@@ -69,18 +73,15 @@ class GoogleSpreadSheetExporter(ResultExporter):
         **kwargs,
     ) -> str:
         """Export data to Google Spread Sheet."""
-        if not self._file_id:
-            raise ValueError("File ID is not set.")
-        client = GoogleSpreadSheet.get_client()
-        workbook = client.open_by_key(self._file_id)
+
         sheet = None
         include_column_header = False
-        for s in workbook.worksheets():  # to handle sheet is not in the workbook
+        for s in self._workbook.worksheets():  # to handle sheet is not in the workbook
             if s.title == sheet_name:
                 sheet = s
                 break
         if not sheet:
-            sheet = workbook.add_worksheet(title=sheet_name, rows=1, cols=1)
+            sheet = self._workbook.add_worksheet(title=sheet_name, rows=1, cols=1)
             include_column_header = True
             row = 1
         else:
