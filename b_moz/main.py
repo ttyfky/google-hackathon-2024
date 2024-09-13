@@ -1,11 +1,50 @@
 import logging
 import os
 
-# import google.cloud.logging
 from flask import Flask
+from opentelemetry import trace
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
 from waitress import serve
 
 import api
+
+
+def setup_tracing():
+    tracer_provider = TracerProvider(resource=Resource(
+        attributes={
+            "service.name": "b_moz",
+        }
+    ))
+
+    if os.environ.get("K_SERVICE", ""):  # Cloud Run
+        from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
+        from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+        processor = BatchSpanProcessor(CloudTraceSpanExporter())
+
+        from opentelemetry.propagate import set_global_textmap
+        from opentelemetry.propagators.cloud_trace_propagator import (
+            CloudTraceFormatPropagator,
+        )
+
+        # Set the X-Cloud-Trace-Context header
+        set_global_textmap(CloudTraceFormatPropagator())
+
+    else:
+        from opentelemetry.sdk.trace.export import (
+            SimpleSpanProcessor,
+            ConsoleSpanExporter,
+        )
+
+        processor = SimpleSpanProcessor(ConsoleSpanExporter())
+
+    tracer_provider.add_span_processor(processor)
+    trace.set_tracer_provider(tracer_provider)
+
+    # Required to log traceId and spanId
+    LoggingInstrumentor().instrument()
 
 
 def create_app():
@@ -23,9 +62,11 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-        # client = google.cloud.logging.Client()
-        # client.setup_logging()
+        import google.cloud.logging
 
+        client = google.cloud.logging.Client()
+        client.setup_logging()
+    setup_tracing()
     if is_local:
         create_app().run(host="", port=3000, debug=True)
     else:

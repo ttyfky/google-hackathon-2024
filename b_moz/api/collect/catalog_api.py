@@ -36,7 +36,7 @@ class LatestItemsApi(Resource):
         _logger.info(f"Query: {category}")
         try:
             new_items = self._usecase.collect(category_query=category)
-
+            _logger.info(f"Collected new items: {new_items}")
             return {"message": f"ok [{new_items}]"}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")
@@ -68,7 +68,7 @@ class TargetSpecApi(Resource):
             extracted = self._usecase.collect(
                 target_query=target, category=category, mode=mode
             )
-
+            _logger.info(f"Collected specs volume: {len(extracted)}")
             return {"message": f"ok [{extracted}]"}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")
@@ -90,6 +90,7 @@ class PubSubTargetSpecApi(Resource):
 
         try:
             extracted = self._usecase.collect(mode=mode)
+            _logger.info(f"Collected specs volume: {len(extracted)}")
             return {"message": f"ok [{extracted}]"}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")
@@ -110,7 +111,9 @@ class SavePubSubTargetSpecApi(Resource):
         num = args.get("num", 0)
 
         try:
+            _logger.info("Saving for specs in PubSub started...")
             extracted = self._usecase.save(num=num)
+            _logger.info("Save completed")
             return {"message": f"ok [{extracted}]"}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")

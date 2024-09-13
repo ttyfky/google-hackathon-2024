@@ -6,7 +6,10 @@ from bs4 import BeautifulSoup
 from langchain.docstore.document import Document
 from langchain_community.document_loaders import BSHTMLLoader
 
+from b_moz.libs.o11y.trace import tracing
 
+
+@tracing
 def fetch_url_content(url):
     try:
         response = requests.get(url, timeout=10)
@@ -22,16 +25,17 @@ class CustomBSHTMLLoader(BSHTMLLoader):
     """Custom BSHTMLLoader that can handle both file paths and StringIO objects."""
 
     def __init__(
-        self,
-        file_path: str | Path,
-        open_encoding: str | None = None,
-        bs_kwargs: Dict | None = None,
-        get_text_separator: str = "",
-        as_html: bool = False,
+            self,
+            file_path: str | Path,
+            open_encoding: str | None = None,
+            bs_kwargs: Dict | None = None,
+            get_text_separator: str = "",
+            as_html: bool = False,
     ) -> None:
         super().__init__(file_path, open_encoding, bs_kwargs, get_text_separator)
         self.as_html = as_html
 
+    @tracing
     def lazy_load(self) -> Iterator[Document]:
         """Load HTML document into document objects."""
         metadata: Dict[str, Union[str, None]] = {}

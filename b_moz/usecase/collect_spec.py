@@ -3,6 +3,7 @@ import logging
 import os
 from typing import List
 
+from b_moz.libs.o11y.trace import tracing
 from b_moz.repository.pubsub.pubsub import PubSub
 from b_moz.usecase.grounding.base import MockRag
 from b_moz.usecase.grounding.catalog import SpecCollector
@@ -19,6 +20,7 @@ class CollectSpec:
     def _get_spec_topic(self):
         return os.environ.get("SPEC_TOPIC", "moz-spec-topic")
 
+    @tracing
     def collect(self, target_query: str, category: str = "", **kwargs) -> List:
         try:
             extracted, links = self.rag.invoke(input=target_query, category=category)
@@ -90,6 +92,7 @@ class CollectSpecPubSub:
             return False
         return True
 
+    @tracing
     def collect(self, **kwargs) -> List:
         with PubSub(num_pull=10) as ps:
             for _ in range(self._NUM_PULL_PROCESS):  # 5 times, 3 messages per pull
@@ -130,6 +133,7 @@ class SavePubSubCollectedSpecToSS:
 
         return True
 
+    @tracing
     def save(self, **kwargs):
         with PubSub(num_pull=50) as ps:  # 50 messages per pull.
             for _ in range(self._NUM_PULL_PROCESS):

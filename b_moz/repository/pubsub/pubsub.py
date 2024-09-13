@@ -6,6 +6,7 @@ from typing import Callable, Optional
 from google.api_core import retry
 from google.cloud import pubsub_v1
 
+from b_moz.libs.o11y.trace import tracing
 from b_moz.repository.base import RepositoryBase
 
 PROJECT_ID = os.getenv("PROJECT_ID", "blg-ggl-ht2024")
@@ -25,6 +26,7 @@ class PubSub(RepositoryBase):
         topic = kwargs.get("topic", _TARGET_TOPIC)
         self.publish(message, topic)
 
+    @tracing
     def publish(self, message: bytes, topic):
         topic_path = self._publisher.topic_path(PROJECT_ID, topic)
 
@@ -33,6 +35,7 @@ class PubSub(RepositoryBase):
 
         logging.info(f"Published message ID: {message_id}")
 
+    @tracing
     def pull_with(
         self,
         callback: Callable[[bytes], bool],

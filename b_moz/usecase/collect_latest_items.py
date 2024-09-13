@@ -3,6 +3,7 @@ import os
 
 from typing import Dict
 
+from b_moz.libs.o11y.trace import tracing
 from b_moz.repository.pubsub.pubsub import PubSub
 from b_moz.repository.spreadsheet.query import ExtractExceptionRepo
 from b_moz.usecase.grounding.base import MockRag
@@ -15,6 +16,7 @@ class CollectLatestModels:
     def __init__(self, rag):
         self.rag = rag
 
+    @tracing
     def collect(self, category_query: str):
         try:
             latests: Dict = self.rag.invoke(input=category_query)
