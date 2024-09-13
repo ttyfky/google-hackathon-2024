@@ -7,6 +7,7 @@ from b_moz.usecase.collect_latest_items import create_latest_items_usecase
 from b_moz.usecase.collect_spec import (
     create_target_spec_usecase,
     create_pubsub_target_spec_usecase,
+    create_save_pubsub_target_spec_usecase,
 )
 
 _logger = logging.getLogger(__name__)
@@ -57,12 +58,16 @@ class TargetSpecApi(Resource):
         args = parser.parse_args()
         target = args.get("target")
         category = args.get("category", "")
+        mode = args.get("mode", "")
+
         if not target:
             return {"message": "No target specified"}, 400
 
         _logger.info(f"Query: {target}")
         try:
-            extracted = self._usecase.collect(target_query=target, category=category)
+            extracted = self._usecase.collect(
+                target_query=target, category=category, mode=mode
+            )
 
             return {"message": f"ok [{extracted}]"}, 200
         except Exception as e:
@@ -85,6 +90,27 @@ class PubSubTargetSpecApi(Resource):
 
         try:
             extracted = self._usecase.collect(mode=mode)
+            return {"message": f"ok [{extracted}]"}, 200
+        except Exception as e:
+            raise InternalServerError(f"Error: {e}")
+
+
+class SavePubSubTargetSpecApi(Resource):
+
+    def __init__(self):
+        super().__init__()
+        self._usecase = create_save_pubsub_target_spec_usecase()
+
+    @marshal_with(catalog_response_fields)
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("num", type=int, location="json", required=False)
+
+        args = parser.parse_args()
+        num = args.get("num", 0)
+
+        try:
+            extracted = self._usecase.save(num=num)
             return {"message": f"ok [{extracted}]"}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")
