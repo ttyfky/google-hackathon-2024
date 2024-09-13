@@ -53,7 +53,7 @@ class ModelStorage(Base):
         storages = data.get("storages", [])
         if storages:
             for storage in storages:
-                self.append([model, storage])
+                self.append([model, ModelStorage.format(storage)])
 
     @staticmethod
     def format(storage: str):
