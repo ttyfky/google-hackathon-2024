@@ -1,7 +1,9 @@
 import logging
 import os
 from typing import List
+import json
 
+from b_moz.repository.pubsub.pubsub import PubSub
 from b_moz.repository.spreadsheet.query import ExtractExceptionRepo, ModelSourceRepo
 from b_moz.repository.spreadsheet.smartphone import (
     ModelRepo,
@@ -11,6 +13,7 @@ from b_moz.repository.spreadsheet.smartphone import (
 )
 from b_moz.usecase.grounding.base import MockRag
 from b_moz.usecase.grounding.catalog import SpecCollector
+
 
 _logger = logging.getLogger(__name__)
 
@@ -79,3 +82,35 @@ def create_target_spec_usecase(spec_repo):
         )
 
     return CollectSpec(SpecCollector(), spec_repo)
+
+
+class CollectSpecPubSub:
+    _NUM_PULL_PROCESS = 1
+
+    def __init__(self, worker: CollectSpec):
+        self.worker = worker
+        self._result = []
+
+    def _call_back(self, payload: bytes):
+        val = json.loads(payload)
+        try:
+
+            _target = val["model"]
+            _category = val["category"]
+            logging.info(f"Collecting spec for {_target}, category: {_category}")
+            res = self.worker.collect(target_query=_target, category=_category)
+            self._result.extend(res)
+        except Exception as e:
+            _logger.error(f"Failed to collect spec for {val} with error: {e}")
+            return False
+        return True
+
+    def collect(self, **kwargs) -> List:
+        with PubSub() as ps:
+            for _ in range(self._NUM_PULL_PROCESS):  # 5 times, 3 messages per pull
+                ps.pull_with(self._call_back)
+        return self._result
+
+
+def create_pubsub_target_spec_usecase(spec_repo):
+    return CollectSpecPubSub(create_target_spec_usecase(spec_repo))
