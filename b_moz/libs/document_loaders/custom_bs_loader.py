@@ -25,12 +25,12 @@ class CustomBSHTMLLoader(BSHTMLLoader):
     """Custom BSHTMLLoader that can handle both file paths and StringIO objects."""
 
     def __init__(
-            self,
-            file_path: str | Path,
-            open_encoding: str | None = None,
-            bs_kwargs: Dict | None = None,
-            get_text_separator: str = "",
-            as_html: bool = False,
+        self,
+        file_path: str | Path,
+        open_encoding: str | None = None,
+        bs_kwargs: Dict | None = None,
+        get_text_separator: str = "",
+        as_html: bool = False,
     ) -> None:
         super().__init__(file_path, open_encoding, bs_kwargs, get_text_separator)
         self.as_html = as_html

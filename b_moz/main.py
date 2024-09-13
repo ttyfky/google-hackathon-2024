@@ -12,11 +12,13 @@ import api
 
 
 def setup_tracing():
-    tracer_provider = TracerProvider(resource=Resource(
-        attributes={
-            "service.name": "b_moz",
-        }
-    ))
+    tracer_provider = TracerProvider(
+        resource=Resource(
+            attributes={
+                "service.name": "b_moz",
+            }
+        )
+    )
 
     if os.environ.get("K_SERVICE", ""):  # Cloud Run
         from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter

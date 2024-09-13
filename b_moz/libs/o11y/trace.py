@@ -26,8 +26,8 @@ def tracing(func):
         """
         parent_span = trace.get_current_span()
         with tracer.start_as_current_span(
-                name=func.__qualname__,
-                links=[trace.Link(parent_span.get_span_context())]):
+            name=func.__qualname__, links=[trace.Link(parent_span.get_span_context())]
+        ):
             return func(*args, **kwargs)
 
     return wrapper
