@@ -7,6 +7,7 @@ from langchain_core.retrievers import BaseRetriever
 from langchain_google_community import GoogleSearchAPIWrapper
 
 from b_moz.libs.document_loaders.custom_bs_loader import CustomBSHTMLLoader
+from b_moz.libs.o11y.trace import tracing
 
 NUM_RESULTS = 3
 MAX_RESULTS = 5
@@ -22,6 +23,7 @@ class GoogleSearchJsonResultRetriever(BaseRetriever):
     def __init__(self, query_tmpl: str, as_html: bool = False):
         super().__init__(query_tmpl=query_tmpl, as_html=as_html)  # type: ignore
 
+    @tracing
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
     ) -> List[Document]:

@@ -7,6 +7,7 @@ import pandas as pd
 from gspread_dataframe import set_with_dataframe
 
 from b_moz.libs.io.google import GoogleSpreadSheet
+from b_moz.libs.o11y.trace import tracing
 
 
 class ResultExporter:
@@ -65,6 +66,7 @@ class GoogleSpreadSheetExporter(ResultExporter):
             raise ValueError("File ID is not set.")
         self._workbook = self._client.open_by_key(self._file_id)
 
+    @tracing
     def export(
         self,
         data: pd.DataFrame,
