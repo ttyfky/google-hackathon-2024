@@ -27,6 +27,7 @@ opentelemetry-propagator-gcp = "^1.7.0"
 opentelemetry-instrumentation = "^0.48b0"
 opentelemetry-instrumentation-logging = "^0.48b0"
 google-cloud-logging = "^3.11.2"
+python-json-logger = "^2.0.7"
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.1.1"
 black = "^24.3.0"
@@ -40,6 +41,7 @@ google-cloud-bigquery = {extras = ["bqstorage", "pandas"], version = "^3.25.0"}
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
 
 
 

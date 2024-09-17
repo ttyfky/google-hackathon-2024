@@ -36,8 +36,9 @@ class ResultExporter:
 
 class LocalCSVExporter(ResultExporter):
     def __init__(self, filename: str = "", path: str = ""):
+        self._logger = logging.getLogger(__name__)
         super().__init__(filename=filename)
-        if path:
+        if not path:
             from b_moz.libs.project import temp_path
 
             self.path = temp_path()
@@ -45,7 +46,9 @@ class LocalCSVExporter(ResultExporter):
             self.path = path
 
     def export(self, data: pd.DataFrame, **kwargs) -> str:
-        _file_name = self.filename()
+        _file_name = kwargs["table_name"] if "table_name" in kwargs else self.filename()
+        if not _file_name.endswith(".csv"):
+            _file_name = f"{_file_name}.csv"
         os.chdir(self.path)
         data.to_csv(
             _file_name,
@@ -54,7 +57,9 @@ class LocalCSVExporter(ResultExporter):
             encoding="utf-8",
             lineterminator="\r\n",
         )
-        return os.path.abspath(_file_name)
+        abspath = os.path.abspath(_file_name)
+        self._logger.info(f"Exported to {abspath}")
+        return abspath
 
 
 class GoogleSpreadSheetExporter(ResultExporter):
@@ -70,7 +75,7 @@ class GoogleSpreadSheetExporter(ResultExporter):
     def export(
         self,
         data: pd.DataFrame,
-        sheet_name: str = "data",
+        table_name: str = "data",
         clear_sheet: bool = False,
         **kwargs,
     ) -> str:
@@ -79,11 +84,11 @@ class GoogleSpreadSheetExporter(ResultExporter):
         sheet = None
         include_column_header = False
         for s in self._workbook.worksheets():  # to handle sheet is not in the workbook
-            if s.title == sheet_name:
+            if s.title == table_name:
                 sheet = s
                 break
         if not sheet:
-            sheet = self._workbook.add_worksheet(title=sheet_name, rows=1, cols=1)
+            sheet = self._workbook.add_worksheet(title=table_name, rows=1, cols=1)
             include_column_header = True
             row = 1
         else:

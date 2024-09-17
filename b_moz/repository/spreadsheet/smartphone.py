@@ -4,11 +4,11 @@ from b_moz.domain.spec.smartphone import (
     ModelColor,
     ModelSupplement,
 )
-from .base import SSRepoBase
+from b_moz.repository.base import RepoBase
 
 
-class ModelRepo(SSRepoBase):
-    sheet_name = "model"
+class ModelRepo(RepoBase):
+    table_name = "model"
 
     def save(self, data: dict, **kwargs):
         with Model() as obj:
@@ -16,8 +16,8 @@ class ModelRepo(SSRepoBase):
             self.save_df(obj.get_dataframe(), **kwargs)
 
 
-class ModelStorageRepo(SSRepoBase):
-    sheet_name = "model_storage"
+class ModelStorageRepo(RepoBase):
+    table_name = "model_storage"
 
     def save(self, data: dict, **kwargs):
         with ModelStorage() as obj:
@@ -25,8 +25,8 @@ class ModelStorageRepo(SSRepoBase):
             self.save_df(obj.get_dataframe(), **kwargs)
 
 
-class ModelColorRepo(SSRepoBase):
-    sheet_name = "model_color"
+class ModelColorRepo(RepoBase):
+    table_name = "model_color"
 
     def save(self, data: dict, **kwargs):
         with ModelColor() as obj:
@@ -34,8 +34,8 @@ class ModelColorRepo(SSRepoBase):
             self.save_df(obj.get_dataframe(), **kwargs)
 
 
-class ModelSupplementRepo(SSRepoBase):
-    sheet_name = "supplements"
+class ModelSupplementRepo(RepoBase):
+    table_name = "supplements"
 
     def save(self, data: dict, **kwargs):
         with ModelSupplement() as obj:

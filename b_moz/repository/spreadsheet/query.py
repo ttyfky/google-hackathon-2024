@@ -1,10 +1,10 @@
 from b_moz.domain.query.query import ExtractException
-from .base import SSRepoBase
+from b_moz.repository.base import RepoBase
 from ...domain.spec.source import ModelSource
 
 
-class ExtractExceptionRepo(SSRepoBase):
-    sheet_name = "exception"
+class ExtractExceptionRepo(RepoBase):
+    table_name = "exception"
 
     def save(self, data: dict, **kwargs):
         with ExtractException() as obj:
@@ -12,8 +12,8 @@ class ExtractExceptionRepo(SSRepoBase):
             self.save_df(obj.get_dataframe(), **kwargs)
 
 
-class ModelSourceRepo(SSRepoBase):
-    sheet_name = "model_source"
+class ModelSourceRepo(RepoBase):
+    table_name = "model_source"
 
     def save(self, data: dict, **kwargs):
         with ModelSource() as obj:

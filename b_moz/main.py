@@ -9,6 +9,8 @@ from opentelemetry.sdk.trace import TracerProvider
 from waitress import serve
 
 import api
+from b_moz.libs.o11y.gc_logging import get_log_handler
+from b_moz.libs.project import is_local
 
 
 def setup_tracing():
@@ -20,27 +22,18 @@ def setup_tracing():
         )
     )
 
-    if os.environ.get("K_SERVICE", ""):  # Cloud Run
-        from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
-        from opentelemetry.sdk.trace.export import BatchSpanProcessor
+    from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-        processor = BatchSpanProcessor(CloudTraceSpanExporter())
+    processor = BatchSpanProcessor(CloudTraceSpanExporter())
 
-        from opentelemetry.propagate import set_global_textmap
-        from opentelemetry.propagators.cloud_trace_propagator import (
-            CloudTraceFormatPropagator,
-        )
+    from opentelemetry.propagate import set_global_textmap
+    from opentelemetry.propagators.cloud_trace_propagator import (
+        CloudTraceFormatPropagator,
+    )
 
-        # Set the X-Cloud-Trace-Context header
-        set_global_textmap(CloudTraceFormatPropagator())
-
-    else:
-        from opentelemetry.sdk.trace.export import (
-            SimpleSpanProcessor,
-            ConsoleSpanExporter,
-        )
-
-        processor = SimpleSpanProcessor(ConsoleSpanExporter())
+    # Set the X-Cloud-Trace-Context header
+    set_global_textmap(CloudTraceFormatPropagator())
 
     tracer_provider.add_span_processor(processor)
     trace.set_tracer_provider(tracer_provider)
@@ -58,18 +51,17 @@ def create_app():
 if __name__ == "__main__":
     _logger = logging.getLogger(__name__)
 
-    is_local = os.environ.get("IS_LOCAL") == "true"
-
-    if is_local:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
+    local = is_local()
+    if local:
         logging.basicConfig(level=logging.INFO)
-        import google.cloud.logging
+    else:
+        logging.basicConfig(
+            level=logging.INFO,
+            handlers=[get_log_handler()],
+        )
+        setup_tracing()
 
-        client = google.cloud.logging.Client()
-        client.setup_logging()
-    setup_tracing()
-    if is_local:
+    if local:
         create_app().run(host="", port=3000, debug=True)
     else:
         serve(create_app(), port=int(os.environ.get("PORT", 3000)))
