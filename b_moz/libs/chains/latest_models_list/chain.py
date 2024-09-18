@@ -15,6 +15,7 @@ from langchain_core.runnables import (
     RunnableLambda,
 )
 from langchain_core.runnables.base import RunnableEach, RunnableParallel
+from langchain_core.runnables.retry import RunnableRetry
 
 from .prompt import LATEST_MODELS_LIST_PROMPT as prompt
 from ...llms.vertexai import get_langchain_model
@@ -54,6 +55,12 @@ def create_latest_models_collect_chain() -> Runnable:
         query_tmpl="{query} 最新モデル 発売", as_html=True
     )
 
+    date_extract_chain = create_model_release_date_extract_chain()
+    retry = RunnableRetry(
+        bound=date_extract_chain,
+        max_attempt_number=3,
+        wait_exponential_jitter=False,
+    )
     chain = (
         RunnableParallel(
             {"input": RunnablePassthrough(), "docs": new_released_model_search}
@@ -67,7 +74,7 @@ def create_latest_models_collect_chain() -> Runnable:
                 for doc in x["docs"]  # type: ignore
             ]
         )
-        | RunnableEach(bound=create_model_release_date_extract_chain())
+        | RunnableEach(bound=retry)
         | (lambda r: reduce(lambda i, e: i + e, r, []))
     )
 

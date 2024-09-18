@@ -36,6 +36,8 @@ class CollectSpec:
                     _logger.info(f"Publishing spec for [{target_query}] to PubSub")
                     with PubSub() as pb:
                         for record in extracted:
+                            if "model" not in record and "Model name" in record:
+                                record["model"] = record.pop("Model name")
                             record["category"] = category
                             record["links"] = links
                             record["query"] = target_query
