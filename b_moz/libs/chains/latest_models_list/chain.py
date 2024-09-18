@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import logging
 import re
 
 from functools import reduce
@@ -19,10 +20,14 @@ from .prompt import LATEST_MODELS_LIST_PROMPT as prompt
 from ...llms.vertexai import get_langchain_model
 from ...retreivers.google_search import GoogleSearchJsonResultRetriever
 
+_logger = logging.getLogger(__name__)
+
 
 def filter_latest_models(models: List) -> List:
+    _logger.info(f"Filtering latest models: {models}")
+    model_list = models if isinstance(models, List) else [models]
     filtered = [
-        m for m in models if re.match(r"^\d{4}-\d{2}-\d{2}$", m["release_date"])
+        m for m in model_list if re.match(r"^\d{4}-\d{2}-\d{2}$", m.get("release_date"))
     ]
     days_30_before = dt.datetime.today() - dt.timedelta(days=30)
     return [
