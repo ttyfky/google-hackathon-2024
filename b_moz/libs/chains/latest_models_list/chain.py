@@ -25,9 +25,11 @@ _logger = logging.getLogger(__name__)
 
 def filter_latest_models(models: List) -> List:
     _logger.info(f"Filtering latest models: {models}")
-    model_list = models if isinstance(models, List) else [models]
+    if not isinstance(models, List):
+        _logger.warning(f"models is not type List: {models}")
+        return []
     filtered = [
-        m for m in model_list if re.match(r"^\d{4}-\d{2}-\d{2}$", m.get("release_date"))
+        m for m in models if re.match(r"^\d{4}-\d{2}-\d{2}$", m.get("release_date"))
     ]
     days_30_before = dt.datetime.today() - dt.timedelta(days=30)
     return [
