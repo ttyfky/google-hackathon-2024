@@ -1,3 +1,6 @@
+import os
+
+from b_moz.libs.project import is_local
 from b_moz.repository.spreadsheet.query import ExtractExceptionRepo, ModelSourceRepo
 from b_moz.repository.spreadsheet.smartphone import (
     ModelRepo,
@@ -7,17 +10,15 @@ from b_moz.repository.spreadsheet.smartphone import (
 )
 
 
-class SaveSS:
-    def __init__(
-        self,
-    ):
+class Saver:
+    def __init__(self, exporter):
         self._repos = {
-            "model": ModelRepo(),
-            "model_source": ModelSourceRepo(),
-            "model_storage": ModelStorageRepo(),
-            "model_color": ModelColorRepo(),
-            "supplements": ModelSupplementRepo(),
-            "exception": ExtractExceptionRepo(),
+            "model": ModelRepo(exporter=exporter),
+            "model_source": ModelSourceRepo(exporter=exporter),
+            "model_storage": ModelStorageRepo(exporter=exporter),
+            "model_color": ModelColorRepo(exporter=exporter),
+            "supplements": ModelSupplementRepo(exporter=exporter),
+            "exception": ExtractExceptionRepo(exporter=exporter),
         }
 
     def __enter__(self):
@@ -44,8 +45,15 @@ class SaveSS:
 
 
 # To prevent race condition, we need to use a single instance of SaveSS.
-_SAVE_SS = SaveSS()
+if is_local() and not os.getenv("DRIVE_SS_ID"):
+    from b_moz.libs.io.exporter import LocalCSVExporter
+
+    _SAVER = Saver(exporter=LocalCSVExporter())
+else:
+    from b_moz.libs.io.exporter import GoogleSpreadSheetExporter
+
+    _SAVER = Saver(GoogleSpreadSheetExporter(file_id=os.environ.get("DRIVE_SS_ID", "")))
 
 
 def get_saver():
-    return _SAVE_SS
+    return _SAVER

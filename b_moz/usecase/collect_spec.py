@@ -4,6 +4,7 @@ import os
 from typing import List
 
 from b_moz.libs.o11y.trace import tracing
+from b_moz.libs.project import pubsub_active
 from b_moz.repository.pubsub.pubsub import PubSub
 from b_moz.usecase.grounding.base import MockRag
 from b_moz.usecase.grounding.catalog import SpecCollector
@@ -27,17 +28,23 @@ class CollectSpec:
             _logger.info(f"Extracted spec: {extracted}")
 
             if kwargs.get("mode", "") == "SS_SAVE":
-                _logger.info(f"Saving spec for [{target_query}] to SS")
+                _logger.info(f"Saving spec for [{target_query}] to S/S")
                 for record in extracted:
                     get_saver().save_spec(record, links, target_query, category)
             else:
-                _logger.info(f"Publishing spec for [{target_query}] to PubSub")
-                with PubSub() as pb:
-                    for record in extracted:
-                        record["category"] = category
-                        record["links"] = links
-                        record["query"] = target_query
-                        pb.save(record, topic=self._get_spec_topic())
+                if pubsub_active():
+                    _logger.info(f"Publishing spec for [{target_query}] to PubSub")
+                    with PubSub() as pb:
+                        for record in extracted:
+                            record["category"] = category
+                            record["links"] = links
+                            record["query"] = target_query
+                            pb.save(record, topic=self._get_spec_topic())
+                else:
+                    _logger.info(
+                        "Saving spec was skipped on local run. If you want to save it, use mode=SS_SAVE."
+                    )
+
             return extracted
 
         except ValueError as e:
@@ -84,7 +91,7 @@ class CollectSpecPubSub:
 
             _target = val["model"]
             _category = val["category"]
-            logging.info(f"Collecting spec for {_target}, category: {_category}")
+            _logger.info(f"Collecting spec for {_target}, category: {_category}")
             res = self.worker.collect(target_query=_target, category=_category)
             self._result.extend(res)
         except Exception as e:

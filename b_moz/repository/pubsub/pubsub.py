@@ -7,18 +7,22 @@ from google.api_core import retry
 from google.cloud import pubsub_v1
 
 from b_moz.libs.o11y.trace import tracing
-from b_moz.repository.base import RepositoryBase
+from b_moz.repository.base import RepoBase
 
-PROJECT_ID = os.getenv("PROJECT_ID", "blg-ggl-ht2024")
 _TARGET_TOPIC = "moz-target-topic"
 
 
-class PubSub(RepositoryBase):
+class PubSub(RepoBase):
+    GOOGLE_CLOUD_PROJECT: str
 
     def __init__(self, num_pull: int = 3):
         super().__init__()
+        self._logger = logging.getLogger(__name__)
         self._publisher = pubsub_v1.PublisherClient()
-
+        project = os.getenv("GOOGLE_CLOUD_PROJECT")
+        if not project:
+            raise ValueError("GOOGLE_CLOUD_PROJECT environment variable is not set.")
+        self.GOOGLE_CLOUD_PROJECT = project
         self._num_pull = num_pull
 
     def save(self, data: dict, **kwargs):
@@ -28,12 +32,12 @@ class PubSub(RepositoryBase):
 
     @tracing
     def publish(self, message: bytes, topic):
-        topic_path = self._publisher.topic_path(PROJECT_ID, topic)
+        topic_path = self._publisher.topic_path(self.GOOGLE_CLOUD_PROJECT, topic)
 
         future = self._publisher.publish(topic_path, data=message)
         message_id = future.result()
 
-        logging.info(f"Published message ID: {message_id}")
+        self._logger.info(f"Published message ID: {message_id}")
 
     @tracing
     def pull_with(
@@ -45,9 +49,9 @@ class PubSub(RepositoryBase):
     ) -> bool:
         with pubsub_v1.SubscriberClient() as subscriber:
             subscription_path = subscriber.subscription_path(
-                PROJECT_ID, subscription_id
+                self.GOOGLE_CLOUD_PROJECT, subscription_id
             )
-            logging.info(f"Pulling messages from {subscription_path}.")
+            self._logger.info(f"Pulling messages from {subscription_path}.")
             response = subscriber.pull(
                 request={
                     "subscription": subscription_path,
@@ -72,7 +76,7 @@ class PubSub(RepositoryBase):
                     request={"subscription": subscription_path, "ack_ids": ack_ids}
                 )
 
-            logging.info(
+            self._logger.info(
                 f"Received and acknowledged {len(response.received_messages)} messages from {subscription_path}."
             )
         return True

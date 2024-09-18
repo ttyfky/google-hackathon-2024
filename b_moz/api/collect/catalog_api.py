@@ -14,6 +14,7 @@ _logger = logging.getLogger(__name__)
 
 catalog_response_fields = {
     "message": fields.String,
+    "result": fields.List(fields.Raw),
 }
 
 
@@ -37,7 +38,7 @@ class LatestItemsApi(Resource):
         try:
             new_items = self._usecase.collect(category_query=category)
             _logger.info(f"Collected new items: {new_items}")
-            return {"message": f"ok [{new_items}]"}, 200
+            return {"message": "ok", "result": new_items["models"]}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")
 
@@ -69,7 +70,7 @@ class TargetSpecApi(Resource):
                 target_query=target, category=category, mode=mode
             )
             _logger.info(f"Collected specs volume: {len(extracted)}")
-            return {"message": f"ok [{extracted}]"}, 200
+            return {"message": "ok", "result": extracted}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")
 
@@ -91,7 +92,7 @@ class PubSubTargetSpecApi(Resource):
         try:
             extracted = self._usecase.collect(mode=mode)
             _logger.info(f"Collected specs volume: {len(extracted)}")
-            return {"message": f"ok [{extracted}]"}, 200
+            return {"message": "ok", "result": extracted}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")
 
@@ -114,6 +115,6 @@ class SavePubSubTargetSpecApi(Resource):
             _logger.info("Saving for specs in PubSub started...")
             extracted = self._usecase.save(num=num)
             _logger.info("Save completed")
-            return {"message": f"ok [{extracted}]"}, 200
+            return {"message": "ok", "result": extracted}, 200
         except Exception as e:
             raise InternalServerError(f"Error: {e}")

@@ -1,9 +1,9 @@
 import logging
 import os
-
 from typing import Dict
 
 from b_moz.libs.o11y.trace import tracing
+from b_moz.libs.project import pubsub_active
 from b_moz.repository.pubsub.pubsub import PubSub
 from b_moz.repository.spreadsheet.query import ExtractExceptionRepo
 from b_moz.usecase.grounding.base import MockRag
@@ -21,10 +21,13 @@ class CollectLatestModels:
         try:
             latests: Dict = self.rag.invoke(input=category_query)
             _logger.info(f"Collected latest models: {latests}")
-            with PubSub() as pb:
-                for model in latests["models"]:
-                    model["category"] = category_query
-                    pb.save(model)
+            if pubsub_active():
+                with PubSub() as pb:
+                    for model in latests["models"]:
+                        model["category"] = category_query
+                        pb.save(model)
+            else:
+                _logger.info("Publishing to model info was skipped.")
             return latests
         except Exception as e:
             _logger.error(

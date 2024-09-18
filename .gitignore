@@ -2,7 +2,7 @@
 resources/secrets/*
 !resources/secrets/.env.example
 resources/temp/*
-
+!resources/temp/.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
