@@ -53,7 +53,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.group.test] # This part can be left out
 
 [tool.poetry.group.test.dependencies]
-pytest = "^8.3.2"
+pytest = "^8.3.3"
 
 [tool.pyright]
 pythonVersion = "3.11"
